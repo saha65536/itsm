@@ -3,6 +3,7 @@ from tkinter import Menu
 from tkinter import StringVar
 from tkinter import Spinbox
 from tkinter import ttk
+from tkinter import LabelFrame
 import tkinter.font as tkFont
 import tkinter.messagebox 
 
@@ -17,11 +18,8 @@ class AppUI():
     def __init__(self):
         self.root = Tk()
         self.root.option_add('*Dialog.msg.font', 'Helvetica 12')
-        self.ft = tkFont.Font(family='FangSong',size=20, weight=tkFont.BOLD)
-        self.progress_bar=ttk.Progressbar(orient='horizontal',mode='determinate',maximum=100,length=180)
-        s = ttk.Style()
-        
-        s.configure('my.TButton', font=('隶书', 20))
+        self.ft = tkFont.Font(family='FangSong',size=20, weight=tkFont.BOLD)        
+
         self.create_menu(self.root)
         self.create_content(self.root)
         self.root.title("绍兴分行运维自动化工具")
@@ -57,31 +55,33 @@ class AppUI():
         menu.add_cascade(label="关于",menu=about_menu)
         root['menu'] = menu
 
-    def create_content(self, root):
+    def create_content(self, root):      
+        frm = LabelFrame(height = 200,width = 300,text = 'IP管理',borderwidth=3)
+        frm.grid(row=0,column=0,pady=10)
                  
-        ttk.Label(text=" 机 构: ",font=self.ft).grid(row=0,column=0,pady=10)
-        self.branchWidget = ttk.Combobox(textvariable=StringVar,state="readonly",width=10,font=self.ft) 
+        ttk.Label(frm,text=" 机 构: ",font=self.ft).grid(row=0,column=0,pady=10)
+        self.branchWidget = ttk.Combobox(frm,textvariable=StringVar,state="readonly",width=10,font=self.ft) 
         self.branchWidget['values'] = self.m_branchs
         self.branchWidget.bind("<<ComboboxSelected>>", self.branchGet)
         self.branchWidget.grid(row=0,column=1,columnspan=3,padx=10,pady=10)
         
         
-        ttk.Label(text=" 楼 层: ",font=self.ft).grid(row=1,column=0,pady=10)
-        self.floorWidget = ttk.Combobox(textvariable=StringVar,state="disabled",width=10,font=self.ft)
+        ttk.Label(frm,text=" 楼 层: ",font=self.ft).grid(row=1,column=0,pady=10)
+        self.floorWidget = ttk.Combobox(frm,textvariable=StringVar,state="disabled",width=10,font=self.ft)
         
         self.floorWidget.bind("<<ComboboxSelected>>", self.floorGet)
         self.floorWidget.grid(row=1,column=1,columnspan=3,padx=10,pady=10)
         
-        ttk.Label(text=" 座位号: ",font=self.ft).grid(row=2,column=0,pady=10)
-        ttk.Label(text="  A",font=self.ft).grid(row=2,column=1,pady=10)
-        self.netportWidget = Spinbox(from_=0,to=255, width=5, bd=8,font=self.ft) 
+        ttk.Label(frm,text=" 座位号: ",font=self.ft).grid(row=2,column=0,pady=10)
+        ttk.Label(frm,text="  A",font=self.ft).grid(row=2,column=1,pady=10)
+        self.netportWidget = Spinbox(frm,from_=0,to=255, width=5, bd=8,font=self.ft) 
         self.netportWidget.grid(row=2,column=2)
-        button = ttk.Button(text ="点我查看座位号", command = self.viewHelp)
+        button = ttk.Button(frm,text ="点我查看座位号", command = self.viewHelp)
         button.grid(row=2,column=3)
         
         
-        ttk.Button(text="设置IP",command=self.changeIP).grid(row=3,column=0,padx=10,pady=10)
-        
+        ttk.Button(frm,text="设置IP",command=self.changeIP).grid(row=3,column=0,padx=10,pady=10)
+        self.progress_bar=ttk.Progressbar(frm,orient='horizontal',mode='determinate',maximum=100,length=180)
         self.progress_bar.grid(row=3,column=1,columnspan=3,padx=10,pady=10)
     def viewHelp(self):
         tkinter.messagebox.showwarning('提示','请查座位下网口号上\n    A口后面的数字'+
@@ -165,4 +165,4 @@ class AppUI():
 
 
 if __name__ == "__main__":
-    AppUI()
+    myapp = AppUI()
