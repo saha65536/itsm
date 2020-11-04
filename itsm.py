@@ -1,24 +1,23 @@
-from tkinter import *
+from tkinter import Tk
+from tkinter import Menu
+from tkinter import StringVar
+from tkinter import Spinbox
 from tkinter import ttk
 import tkinter.font as tkFont
-import tkinter
 import tkinter.messagebox 
 
-import os
-import time
-
-import wmi
-import random
+import wmi 
 
 class AppUI():
     m_branchs = ['分行本部','柯桥支行','嵊州支行','上虞支行','世纪街支行','诸暨支行','新昌支行']
     m_ips = ['','11.43.1.','11.43.2.','11.43.3.','11.43.4.','11.43.5.','11.43.6.']
-    m_floorIPs = ['11.43.128.','11.43.129.','11.43.130.','11.43.131.','11.43.132.','11.43.133.']
-    m_floors = ['一楼','二楼','三楼','四楼','五楼','六楼']
+    m_floorIPs = ['11.43.128.','11.43.129.','11.43.130.','11.43.131.','11.43.132.','11.43.133.','11.43.134.']
+    m_floors = ['一楼','二楼','三楼','四楼','五楼','六楼','十八楼']
 
     def __init__(self):
         self.root = Tk()
-        self.ft = tkFont.Font(size=20, weight=tkFont.BOLD)
+        self.root.option_add('*Dialog.msg.font', 'Helvetica 12')
+        self.ft = tkFont.Font(family='FangSong',size=20, weight=tkFont.BOLD)
         self.progress_bar=ttk.Progressbar(orient='horizontal',mode='determinate',maximum=100,length=180)
         s = ttk.Style()
         
@@ -64,27 +63,39 @@ class AppUI():
         self.branchWidget = ttk.Combobox(textvariable=StringVar,state="readonly",width=10,font=self.ft) 
         self.branchWidget['values'] = self.m_branchs
         self.branchWidget.bind("<<ComboboxSelected>>", self.branchGet)
-        self.branchWidget.grid(row=0,column=1,columnspan=2,padx=10,pady=10)
+        self.branchWidget.grid(row=0,column=1,columnspan=3,padx=10,pady=10)
         
         
         ttk.Label(text=" 楼 层: ",font=self.ft).grid(row=1,column=0,pady=10)
-        self.floorWidget = ttk.Combobox(textvariable=StringVar,state="readonly",width=10,font=self.ft)
-        self.floorWidget['values'] = self.m_floors
+        self.floorWidget = ttk.Combobox(textvariable=StringVar,state="disabled",width=10,font=self.ft)
+        
         self.floorWidget.bind("<<ComboboxSelected>>", self.floorGet)
-        self.floorWidget.grid(row=1,column=1,columnspan=2,padx=10,pady=10)
+        self.floorWidget.grid(row=1,column=1,columnspan=3,padx=10,pady=10)
         
         ttk.Label(text=" 座位号: ",font=self.ft).grid(row=2,column=0,pady=10)
         ttk.Label(text="  A",font=self.ft).grid(row=2,column=1,pady=10)
         self.netportWidget = Spinbox(from_=0,to=255, width=5, bd=8,font=self.ft) 
         self.netportWidget.grid(row=2,column=2)
+        button = ttk.Button(text ="点我查看座位号", command = self.viewHelp)
+        button.grid(row=2,column=3)
         
         
         ttk.Button(text="设置IP",command=self.changeIP).grid(row=3,column=0,padx=10,pady=10)
         
-        self.progress_bar.grid(row=3,column=1,columnspan=2,padx=10,pady=10)
+        self.progress_bar.grid(row=3,column=1,columnspan=3,padx=10,pady=10)
+    def viewHelp(self):
+        tkinter.messagebox.showwarning('提示','请查座位下网口号上\n    A口后面的数字'+
+                                                             '\n     Axx   Bxx'+ 
+                                                             '\n      口      口')
         
     def branchGet(self,Event):
         self.selectedBranch=self.branchWidget.get()
+        if self.m_branchs[0] == self.selectedBranch:
+            self.floorWidget['values'] = self.m_floors
+            self.floorWidget.configure(state='readonly')
+        else:            
+            self.floorWidget.set('')
+            self.floorWidget.configure(state='disabled')
         
     def floorGet(self,Event):
         self.selectedFloor=self.floorWidget.get()
@@ -132,7 +143,6 @@ class AppUI():
         nic_configs = wmi.WMI().Win32_NetworkAdapterConfiguration(IPEnabled=True)
         # First network adaptor
         nic = nic_configs[0]
-        print(nic)
         
         self.updateProcess(60)
          
