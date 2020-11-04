@@ -18,7 +18,10 @@ class AppUI():
     def __init__(self):
         self.root = Tk()
         self.root.option_add('*Dialog.msg.font', 'Helvetica 12')
-        self.ft = tkFont.Font(family='FangSong',size=20, weight=tkFont.BOLD)        
+        self.ft = tkFont.Font(family='FangSong',size=20, weight=tkFont.BOLD)   
+        
+        self.selectedBranch = ''
+        self.selectedFloor = ''
 
         self.create_menu(self.root)
         self.create_content(self.root)
@@ -27,7 +30,7 @@ class AppUI():
         
         self.center_window()
         
-        self.selectedBranch = ''
+        
     
     def center_window(self):  
         curWidth = self.root.winfo_width()  # get current width
@@ -121,16 +124,26 @@ class AppUI():
         
         selectedBranch = self.getArrIndex(self.selectedBranch,self.m_branchs)
         if -1 == selectedBranch:
+            self.updateProcess(0)
+            tkinter.messagebox.showwarning('提示','请选择机构')
             return
         elif 0 == selectedBranch:#分行本级
             selectedFloor = self.getArrIndex(self.selectedFloor,self.m_floors)
+            if -1 == selectedFloor:
+                self.updateProcess(0)
+                tkinter.messagebox.showwarning('提示','请选择楼层')
+                return
             ip = self.m_floorIPs[selectedFloor]
         else:
             ip = self.m_ips[selectedBranch]
             
         self.updateProcess(30)            
             
-        netport = self.netportWidget.get()        
+        netport = self.netportWidget.get()    
+        if '0' == netport:
+            self.updateProcess(0)
+            tkinter.messagebox.showwarning('提示','请选择座位号')
+            return
         gateway = ip + '254'
         ip = ip + netport
         dns = ['11.43.240.193','11.43.240.194']
